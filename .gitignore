@@ -12,3 +12,9 @@
 *.fdb_latexmk
 
 *.aux
+
+*.fits
+
+*.py~
+
+devpython/Data/covmat/sigma_mu\.txt
