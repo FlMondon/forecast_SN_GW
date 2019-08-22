@@ -37,5 +37,39 @@ Faire les matrices de covariance avec variables pertinentes.
 
 </ul>
 
+<div id="Introduction-2019-08-22"><h2 id="2019-08-22" class="header"><a href="#Introduction-2019-08-22">2019-08-22</a></h2></div>
+<div id="Introduction-2019-08-22-Général"><h3 id="Général" class="header"><a href="#Introduction-2019-08-22-Général">Général</a></h3></div>
+<p>
+COMMENT MERGE ?
+</p>
+
+<p>
+Pour que <em>name</em> deviennent comme le <em>master</em> remote, entrer
+</p>
+<blockquote>
+git pull origin master
+</blockquote>
+
+<div id="Introduction-2019-08-22-SNe"><h3 id="SNe" class="header"><a href="#Introduction-2019-08-22-SNe">SNe</a></h3></div>
+<p>
+Fonction de lecture doit prendre les fichiers et la transformer en array, en
+additionnant les matrices de covariance présentes dans ledit fichier.
+</p>
+
+<p>
+Il faudrait :
+</p>
+<ul>
+<li class="done4">
+un premier array avec m_b, x_1, c, z_cmb à partir de <em><span id="Introduction-2019-08-22-SNe-jlalcparams"></span><strong id="jlalcparams">jlalcparams</strong></em>
+
+<li class="done4">
+sigma_z, sigma_lens, sigma_coh à partir des <em><span id="Introduction-2019-08-22-SNe-sigma-mu.txt"></span><strong id="sigma-mu.txt">sigma-mu.txt</strong></em>
+
+<li class="done4">
+un array cov à partir des <em><span id="Introduction-2019-08-22-SNe-.fits"></span><strong id=".fits">.fits</strong></em>
+
+</ul>
+
 </body>
 </html>
