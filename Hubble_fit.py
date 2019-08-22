@@ -83,18 +83,14 @@ class Hubble_fit(object):
         return obj
     
 
-    def __init__(self, X, cov_X, zhl, zcmb, zerr,  sig_int=False, guess=None):
+    def __init__(self, X, cov_X, zhl, zcmb, sig_z,  sig_int, sig_lens, guess=None):
         self.variable = X
         self.cov = cov_X
         self.zcmb = zcmb
         self.zhl = zhl
-        self.zerr = zerr
-        
-        if sig_int == False:
-           self.fit_intrinsic == True
-        else:
-            self.fit_intrinsic == False
-        self.dmz = 5/np.log(10) * np.sqrt(self.zerr**2 + 0.001**2) / self.zcmb #adding peculiar velocity
+        self.dmz = (5*sig_z)/(np.log(10)*self.zcmb)  #adding peculiar velocity
+        self.sig_int = sig_int
+        self.sig_lens = sig_lens
         self.dof = len(X)-len(self.freeparameters)  
 
 
@@ -116,7 +112,7 @@ class Hubble_fit(object):
                 self.Cmu += (coef1 * coef2) * self.cov[i::len(params), j::len(params)] 
                 
                 
-        self.Cmu[np.diag_indices_from(self.Cmu)] += self.sig_int**2 + self.dmz**2 
+        self.Cmu[np.diag_indices_from(self.Cmu)] += self.sig_int**2 + self.dmz**2 + self.sig_lens**2
         self.C = inv(self.Cmu)
         self.distance_modulus_table =  self.distance_modulus(params)
         L = self.distance_modulus_table - distance_modulus_th(self.zcmb, self.zhl)
