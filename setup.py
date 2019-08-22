@@ -7,7 +7,7 @@ import glob
 from setuptools import setup, find_packages, Extension
 
 # Package name
-name = 'sugar_analysis'
+name = 'forecast_SN_GW'
 
 # Packages (subdirectories in sugar_analysis/)
 packages = find_packages()
