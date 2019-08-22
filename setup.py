@@ -20,9 +20,9 @@ scripts = glob.glob("scripts/*.py")
 package_data = {}
 
 setup(name=name,
-      description=("sugar_analysis"),
+      description=("forecast_SN_GW"),
       classifiers=["Topic :: Scientific :: Astronomy",
                    "Intended Audience :: Science/Research"],
-      author="FlMondon",
+      author="",
       packages=packages,
       scripts=scripts)
