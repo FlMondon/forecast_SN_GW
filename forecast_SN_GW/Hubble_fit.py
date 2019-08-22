@@ -37,7 +37,7 @@ def make_method(obj):
     return decorate
 
 
-def get_hubblefit(x, cov_x, zhl, zcmb, zerr, PARAM_NAME=np.asarray(['alpha1','alpha2',"alpha3","beta","delta", "delta2", "delta3"])):
+def get_hubblefit(x, cov_x, zhl, zcmb, sig_z,  sig_int, sig_lens, PARAM_NAME=np.asarray(['alpha1','alpha2',"alpha3","beta","delta", "delta2", "delta3"])):
     """
     Parameters
     ----------
@@ -60,7 +60,7 @@ def get_hubblefit(x, cov_x, zhl, zcmb, zerr, PARAM_NAME=np.asarray(['alpha1','al
         freeparameters = ["Mb"]+PARAM_NAME[:n_corr].tolist()
         
 
-    h = hubble_fit_case(x, cov_x, zhl, zcmb, zerr)
+    h = hubble_fit_case(x, cov_x,zhl, zcmb, sig_z,  sig_int, sig_lens,)
     return h
 
 
