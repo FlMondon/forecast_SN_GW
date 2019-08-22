@@ -18,3 +18,5 @@
 *.py~
 
 devpython/Data/covmat/sigma_mu\.txt
+
+Data/covmat/sigma_mu\.txt
