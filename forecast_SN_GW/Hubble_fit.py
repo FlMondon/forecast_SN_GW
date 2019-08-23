@@ -60,7 +60,11 @@ def get_hubblefit(x, cov_x, zhl, zcmb, sig_z,  sig_int, sig_lens, PARAM_NAME=np.
         freeparameters = ["Mb"]+PARAM_NAME[:n_corr].tolist()
         
 
+<<<<<<< HEAD
     h = hubble_fit_case(x, cov_x,zhl, zcmb, sig_z,  sig_int, sig_lens,)
+=======
+    h = hubble_fit_case(x, cov_x, zhl, zcmb, sig_z,  sig_int, sig_lens)
+>>>>>>> 581990d31d4bc2d2c2a70fd2e88d0434effcc593
     return h
 
 
