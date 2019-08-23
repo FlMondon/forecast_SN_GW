@@ -13,10 +13,10 @@ from .constant import CLIGHT, H0
 #   Cosmology        #
 # ------------------ #
 
-def int_cosmo(z, Omega_M=0.3):   
+def int_cosmo(z, OmgM):   
     """
     """
-    return 1./np.sqrt(Omega_M*(1+z)**3+(1.-Omega_M))
+    return 1./np.sqrt(OmgM*(1+z)**3+(1.-OmgM))
     
 def luminosity_distance(omgM, zcmb, zhl):
     """
@@ -24,7 +24,7 @@ def luminosity_distance(omgM, zcmb, zhl):
     if type(zcmb)==np.ndarray:
         integr = np.zeros_like(zcmb)
         for i in range(len(zcmb)):
-            integr[i]=integrate.quad(int_cosmo, 0, zcmb[i])[0]
+            integr[i]=integrate.quad(int_cosmo, 0, zcmb[i], args=(omgM))[0]
     else:
         integr = integrate.quad(int_cosmo, 0, zcmb, args=(omgM))[0]
 
