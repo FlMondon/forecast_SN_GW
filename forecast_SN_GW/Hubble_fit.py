@@ -60,11 +60,8 @@ def get_hubblefit(x, cov_x, zhl, zcmb, sig_z,  sig_int, sig_lens, PARAM_NAME=np.
         freeparameters = ["Mb"]+PARAM_NAME[:n_corr].tolist()
         
 
-<<<<<<< HEAD
-    h = hubble_fit_case(x, cov_x,zhl, zcmb, sig_z,  sig_int, sig_lens,)
-=======
+
     h = hubble_fit_case(x, cov_x, zhl, zcmb, sig_z,  sig_int, sig_lens)
->>>>>>> 581990d31d4bc2d2c2a70fd2e88d0434effcc593
     return h
 
 
@@ -79,9 +76,9 @@ class Hubble_fit(object):
         obj = super(Hubble_fit,cls).__new__(cls)
         
         exec ("@make_method(Hubble_fit)\n"+\
-             "def _minuit_chi2_(self,%s): \n"%(", ".join(obj.freeparameters))+\
+             "def _minuit_chi2_(self,%s): \n"%(", ".join(obj.freeparameters)+', omgM')+\
              "    parameters = %s \n"%(", ".join(obj.freeparameters))+\
-             "    return self.get_chi2(parameters)\n")
+             "    return self.get_chi2(parameters, omgM)\n")
 
 
         return obj
@@ -105,7 +102,7 @@ class Hubble_fit(object):
 
         return  np.sum(np.concatenate([[1],params[1:]]).T * self.variable, axis=1) - params[0]     
     
-    def get_chi2(self, params):
+    def get_chi2(self, params, omgM):
         """
         """
         self.Cmu = np.zeros_like(self.cov[::len(params),::len(params)])
@@ -113,13 +110,13 @@ class Hubble_fit(object):
 
         for i, coef1 in enumerate(pcorr):
             for j, coef2 in enumerate(pcorr):
-                self.Cmu += (coef1 * coef2) * self.cov[i::len(params), j::len(params)] 
+                self.Cmu += (coef1 * coef2) * self.cov[i::len(params)-1, j::len(params)-1] 
                 
                 
         self.Cmu[np.diag_indices_from(self.Cmu)] += self.sig_int**2 + self.dmz**2 + self.sig_lens**2
         self.C = inv(self.Cmu)
         self.distance_modulus_table =  self.distance_modulus(params)
-        L = self.distance_modulus_table - distance_modulus_th(self.zcmb, self.zhl)
+        L = self.distance_modulus_table - distance_modulus_th(omgM, self.zcmb, self.zhl)
         self.residuals = L
         self.var = np.diag(self.Cmu)
         return np.dot(L, np.dot(self.C,L))        
