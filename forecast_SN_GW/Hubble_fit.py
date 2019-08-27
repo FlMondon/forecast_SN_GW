@@ -37,7 +37,7 @@ def make_method(obj):
     return decorate
 
 
-def get_hubblefit(x, cov_x, zhl, zcmb, sig_z,  sig_int, sig_lens, PARAM_NAME=np.asarray(['alpha1','alpha2',"alpha3","beta","delta", "delta2", "delta3"])):
+def get_hubblefit(x, cov_x, zhl, zcmb,  sig_int, sig_lens, PARAM_NAME=np.asarray(['alpha1','alpha2',"alpha3","beta","delta", "delta2", "delta3"])):
     """
     Parameters
     ----------
@@ -60,7 +60,8 @@ def get_hubblefit(x, cov_x, zhl, zcmb, sig_z,  sig_int, sig_lens, PARAM_NAME=np.
         freeparameters = ["Mb"]+PARAM_NAME[:n_corr].tolist()
         
 
-    h = hubble_fit_case(x, cov_x, zhl, zcmb, sig_z,  sig_int, sig_lens)
+
+    h = hubble_fit_case(x, cov_x, zhl, zcmb,  sig_int, sig_lens)
     return h
 
 
@@ -75,20 +76,20 @@ class Hubble_fit(object):
         obj = super(Hubble_fit,cls).__new__(cls)
         
         exec ("@make_method(Hubble_fit)\n"+\
-             "def _minuit_chi2_(self,%s): \n"%(", ".join(obj.freeparameters))+\
+             "def _minuit_chi2_(self,%s): \n"%(", ".join(obj.freeparameters)+', omgM')+\
              "    parameters = %s \n"%(", ".join(obj.freeparameters))+\
-             "    return self.get_chi2(parameters)\n")
+             "    return self.get_chi2(parameters, omgM)\n")
 
 
         return obj
     
 
-    def __init__(self, X, cov_X, zhl, zcmb, sig_z,  sig_int, sig_lens, guess=None):
+    def __init__(self, X, cov_X, zhl, zcmb, sig_int, sig_lens, guess=None):
         self.variable = X
         self.cov = cov_X
         self.zcmb = zcmb
         self.zhl = zhl
-        self.dmz = (5*sig_z)/(np.log(10)*self.zcmb)  #adding peculiar velocity
+        self.pecvel = (5 * 150 / 3e5) / (np.log(10.) *self.zcmb)   #adding peculiar velocity
         self.sig_int = sig_int
         self.sig_lens = sig_lens
         self.dof = len(X)-len(self.freeparameters)  
@@ -101,21 +102,20 @@ class Hubble_fit(object):
 
         return  np.sum(np.concatenate([[1],params[1:]]).T * self.variable, axis=1) - params[0]     
     
-    def get_chi2(self, params):
+    def get_chi2(self, params, omgM):
         """
         """
-        self.Cmu = np.zeros_like(self.cov[::len(params),::len(params)])
-        pcorr = np.concatenate([[1],params[1:]])
-
+        self.Cmu = np.zeros_like(self.cov[::len(params)-1,::len(params)-1])
+        pcorr = np.concatenate([[1],params[1:-1]])
         for i, coef1 in enumerate(pcorr):
             for j, coef2 in enumerate(pcorr):
-                self.Cmu += (coef1 * coef2) * self.cov[i::len(params), j::len(params)] 
-                
-                
-        self.Cmu[np.diag_indices_from(self.Cmu)] += self.sig_int**2 + self.dmz**2 + self.sig_lens**2
+                self.Cmu += (coef1 * coef2) * self.cov[i::len(params)-1, j::len(params)-1] 
+        
+        
+        self.Cmu[np.diag_indices_from(self.Cmu)] += self.sig_int**2 + self.pecvel**2 + self.sig_lens**2
         self.C = inv(self.Cmu)
         self.distance_modulus_table =  self.distance_modulus(params)
-        L = self.distance_modulus_table - distance_modulus_th(self.zcmb, self.zhl)
+        L = self.distance_modulus_table - distance_modulus_th(omgM, self.zcmb, self.zhl)
         self.residuals = L
         self.var = np.diag(self.Cmu)
         return np.dot(L, np.dot(self.C,L))        
@@ -194,7 +194,6 @@ class Hubble_fit(object):
         [None,None] for _boundaries
         """
         self._loopcount = 0
-        self.sig_int = 0.
         self.setup_guesses(**kwargs)
         
         self.first_iter = self._fit_minuit_()
@@ -209,7 +208,8 @@ class Hubble_fit(object):
         minuit_kwargs = {}
         for param in self.freeparameters:
             minuit_kwargs[param] = self.param_input["%s_guess"%param]
-            
+            minuit_kwargs['Mb'] = -19.05
+            minuit_kwargs['omgM'] = 0.3
 
         self.minuit = minuit.Minuit(self._minuit_chi2_, **minuit_kwargs)
     
