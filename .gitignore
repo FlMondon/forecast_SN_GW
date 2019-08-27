@@ -26,3 +26,5 @@ Data/covmat/sigma_mu\.txt
 Notebooks/.ipynb_checkpoints/
 
 forecast_SN_GW.egg-info/
+
+*.odp#
