@@ -22,3 +22,5 @@ devpython/Data/covmat/sigma_mu\.txt
 Data/covmat/sigma_mu\.txt
 
 *.pyc
+
+Notebooks/.ipynb_checkpoints/
