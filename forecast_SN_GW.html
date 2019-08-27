@@ -37,5 +37,72 @@ Faire les matrices de covariance avec variables pertinentes.
 
 </ul>
 
+<div id="Introduction-2019-08-22"><h2 id="2019-08-22" class="header"><a href="#Introduction-2019-08-22">2019-08-22</a></h2></div>
+<div id="Introduction-2019-08-22-Général"><h3 id="Général" class="header"><a href="#Introduction-2019-08-22-Général">Général</a></h3></div>
+<p>
+COMMENT MERGE ?
+</p>
+
+<p>
+Pour que <em>name</em> deviennent comme le <em>master</em> remote, entrer
+</p>
+<blockquote>
+git pull origin master
+</blockquote>
+
+<div id="Introduction-2019-08-22-SNe"><h3 id="SNe" class="header"><a href="#Introduction-2019-08-22-SNe">SNe</a></h3></div>
+<p>
+Fonction de lecture doit prendre les fichiers et la transformer en array, en
+additionnant les matrices de covariance présentes dans ledit fichier.
+</p>
+
+<p>
+Il faudrait :
+</p>
+<ul>
+<li class="done4">
+un premier array avec m_b, x_1, c, z_cmb à partir de <em><span id="Introduction-2019-08-22-SNe-jlalcparams"></span><strong id="jlalcparams">jlalcparams</strong></em>
+
+<li class="done4">
+sigma_z, sigma_lens, sigma_coh à partir des <em><span id="Introduction-2019-08-22-SNe-sigma-mu.txt"></span><strong id="sigma-mu.txt">sigma-mu.txt</strong></em>
+
+<li class="done4">
+un array cov à partir des <em><span id="Introduction-2019-08-22-SNe-.fits"></span><strong id=".fits">.fits</strong></em>
+
+</ul>
+
+<div id="Introduction-2019-08-27"><h2 id="2019-08-27" class="header"><a href="#Introduction-2019-08-27">2019-08-27</a></h2></div>
+<div id="Introduction-2019-08-27-Partie GW"><h3 id="Partie GW" class="header"><a href="#Introduction-2019-08-27-Partie GW">Partie GW</a></h3></div>
+<p>
+<em>Adrien</em> nous a parlé de la manière de déterminer comment considérer un signal
+comme utilisable avec le ratio signal/bruit :
+</p>
+<blockquote>
+&gt; \rho = \int \mathrm{d} f \frac{\abs{h(f)}²}{Sn(f)} &gt; 8
+</blockquote>
+
+<p>
+Si c'est le cas, on aura alors
+</p>
+<blockquote>
+&gt; h(t) = \frac{M_c{}^{5/8}}{d_L}
+</blockquote>
+
+<p>
+avec M_c la <em>chirped mass</em>. L'erreur sur <span id="Introduction-2019-08-27-Partie GW-d_L"></span><strong id="d_L">d_L</strong> sera alors
+</p>
+<blockquote>
+&gt; \sigma_{d_L{}²} = (F⁻¹)^{ii}
+</blockquote>
+
+<p>
+avec <span id="Introduction-2019-08-27-Partie GW-F"></span><strong id="F">F</strong> la matrice de <em>Fisher</em>, dérivée de la probabilité (je crois ?)
+</p>
+
+<p>
+<em>Isaac</em> nous conseille de ne pas s'attarder trop sur la précision du forecast,
+sinon on pourrait y passer trop de temps.
+</p>
+
 </body>
 </html>
