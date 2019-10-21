@@ -9,16 +9,14 @@ Created on Wed Sep 11 15:34:25 2019
 from matplotlib.pyplot import *
 import numpy as np
 from numpy import *
-import scipy
+from scipy import integrate
 from scipy import interpolate
 ion()
 show()
 
-H0 = 67.74e3 #en [m s-1 Mpc-1] 
-Om0 = 0.315
-Or0 = 8.47 * 10**-5
-OK0 = 0.0
-OL0 = 0.685
+H0 = 70e3 #en [m s-1 Mpc-1] 
+Om0 = 0.295323	
+
 
 G_new = 6.674 * 10**-11 # [m3 kg−1 s−2]
 c_lum = 299792458 # [m/s]
@@ -28,10 +26,10 @@ m_sol =  1.98847*10**30  # [kg]
 #######FIRST PART : THE REDSHIFT DISTRIBUTION
 
 def Hz(z):
-	return H0 * np.sqrt(Om0*(1.+z)**3 + Or0*(1.+z)**4 + OK0*(1.+z)**2 + OL0)
+	return H0 * np.sqrt(Om0*(1.+z)**3 + (1-Om0))
 
 def dist_como(z):
-	return c_lum * scipy.integrate.quad(lambda zp : 1.0/Hz(zp), 0, z)[0]
+	return c_lum * integrate.quad(lambda zp : 1.0/Hz(zp), 0, z)[0]
 
 def Rz(z):
 	if z<=1:
@@ -43,7 +41,7 @@ def Rz(z):
     
     
 def Pz(z) :
-    return 4*np.pi*dist_como(z)**2*Rz(z) / Hz(z)/(1.+z)
+    return 4*np.pi*dist_como(z)**2*Rz(z) / (Hz(z)*(1.+z))
 
 def dist_lum(z) :
     return (1.0+z) * dist_como(z)
@@ -53,7 +51,7 @@ zrange = np.linspace(0, 5, 10000)
 Pzs = np.vectorize(Pz)(zrange)
 Pzs = Pzs/sum(Pzs)
 cum_Pz = np.cumsum(Pzs)
-invfcum_Pz = scipy.interpolate.interp1d(cum_Pz, zrange)
+invfcum_Pz = interpolate.interp1d(cum_Pz, zrange)
 
 def GenerateRedshift():
 	uniform_randoms = np.random.uniform(0, 1)
@@ -138,8 +136,9 @@ while i < 1000 :
     if rho > 8. :
         i += 1
         sigma_dl = 2 * dl / rho
-        random_dl = np.random.normal(loc=dl, scale = sigma_dl)
-        mockCatalogue.append([z, random_dl, sigma_dl])
+        random_mu = 5*np.log10(np.random.normal(loc=dl, scale = sigma_dl)*10**6)-5 #unite jla
+        sigma_mu = 5 /(np.log(10)*np.random.normal(loc=dl, scale = sigma_dl))*sigma_dl
+        mockCatalogue.append([z, random_mu, sigma_mu])
         
     
 print(mockCatalogue)

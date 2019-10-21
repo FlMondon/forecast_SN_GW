@@ -35,6 +35,7 @@ def make_method(obj):
 
 
 def get_hubblefit(x, cov_x, zhl, zcmb,  sig_int, sig_lens,
+                  fit_cosmo=True, sirens=1.,
                   PARAM_NAME=np.asarray(['alpha1', 'alpha2', "alpha3", "beta",
                                          "delta", "delta2", "delta3"])):
     """
@@ -62,7 +63,9 @@ def get_hubblefit(x, cov_x, zhl, zcmb,  sig_int, sig_lens,
     class hubble_fit_case(Hubble_fit):
         freeparameters = ["Mb"]+PARAM_NAME[:n_corr].tolist()
 
-    h = hubble_fit_case(x, cov_x, zhl, zcmb,  sig_int, sig_lens)
+    h = hubble_fit_case(x, cov_x, zhl, zcmb,
+                        sig_int, sig_lens, fit_cosmo=fit_cosmo,
+                        sirens=sirens)
     return h
 
 
@@ -83,16 +86,20 @@ class Hubble_fit(object):
 
         return obj
 
-    def __init__(self, X, cov_X, zhl, zcmb, sig_int, sig_lens, guess=None):
+    def __init__(self, X, cov_X, zhl, zcmb, sig_int, sig_lens, fit_cosmo=True, guess=None, sirens=1.):
         self.variable = X
         self.cov = cov_X
         self.zcmb = zcmb
         self.zhl = zhl
         self.pecvel = (5 * 150 / 3e5) / (np.log(10.) *
                                          self.zcmb)  # adding peculiar velocity
+        
+
+        self.Mb_fact = sirens
         self.sig_int = sig_int
         self.sig_lens = sig_lens
         self.dof = len(X)-len(self.freeparameters)
+        self.fit_cosmo = fit_cosmo
 
     def distance_modulus(self, params):
         """
@@ -100,7 +107,7 @@ class Hubble_fit(object):
         """
 
         return np.sum(np.concatenate([[1], params[1:]]).T * self.variable,
-                      axis=1) - params[0]
+                      axis=1) - params[0]*self.Mb_fact
 
     def get_chi2(self, params, omgM):
         """
@@ -210,9 +217,12 @@ class Hubble_fit(object):
         minuit_kwargs = {}
         for param in self.freeparameters:
             minuit_kwargs[param] = self.param_input["%s_guess" % param]
-            minuit_kwargs['Mb'] = -19.05
+            minuit_kwargs['Mb'] = -19.
             minuit_kwargs['omgM'] = 0.3
-
+            minuit_kwargs['limit_omgM'] =(0.,1.)
+            if self.fit_cosmo == False:
+                minuit_kwargs['fix_omgM']=True
+                
         self.minuit = minuit.Minuit(self._minuit_chi2_,
                                     pedantic=False,
                                     print_level=1,
