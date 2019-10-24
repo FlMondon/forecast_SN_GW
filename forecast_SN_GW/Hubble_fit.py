@@ -187,7 +187,7 @@ class Hubble_fit(object):
                 self.param_input[name+"_boundaries"] = [None, None]
 
     def fit(self, fix_omgM=False,
-        fix_omgK=True, fix_w=True, **kwargs):
+        fix_omgK=True, fix_w=True, add_minuit_kwargs=None):
         """
         How to use kwargs
         For each variable `v` of the model (see freeparameters)
@@ -209,7 +209,10 @@ class Hubble_fit(object):
         self.fix_omgM = fix_omgM
         self.fix_omgK = fix_omgK
         self.fix_w = fix_w
-        self.setup_guesses(**kwargs)
+        if add_minuit_kwargs == None:
+            self.add_minuit_kwargs = {}
+        else :
+            self.add_minuit_kwargs = add_minuit_kwargs
 
         self.first_iter = self._fit_minuit_()
         # - Final steps
@@ -219,23 +222,21 @@ class Hubble_fit(object):
         """
         """
         # == Minuit Keys == #
-        minuit_kwargs = {}
-        for param in self.freeparameters:
-            minuit_kwargs[param] = self.param_input["%s_guess" % param]
-            minuit_kwargs['Mb'] = -19.05
-            minuit_kwargs['omgM'] = 0.3
-            minuit_kwargs['omgK'] = 0.
-            minuit_kwargs['w'] = -1.
-            minuit_kwargs['limit_omgM'] =(0.,1.)
-            minuit_kwargs['limit_omgK'] =(-1.,1.)
-            if self.fit_cosmo == False:
-                minuit_kwargs['fix_omgM'] = True
-                minuit_kwargs['fix_omgK'] = True
-                minuit_kwargs['fix_w'] = True
-            else: 
-                minuit_kwargs['fix_omgM'] = self.fix_omgM
-                minuit_kwargs['fix_omgK'] = self.fix_omgK
-                minuit_kwargs['fix_w'] = self.fix_w  
+        minuit_kwargs = self.add_minuit_kwargs
+        minuit_kwargs['Mb'] = -19.05
+        minuit_kwargs['omgM'] = 0.3
+        minuit_kwargs['omgK'] = 0.
+        minuit_kwargs['w'] = -1.
+        minuit_kwargs['limit_omgM'] =(0.,1.)
+        minuit_kwargs['limit_omgK'] =(-1.,1.)
+        if self.fit_cosmo == False:
+            minuit_kwargs['fix_omgM'] = True
+            minuit_kwargs['fix_omgK'] = True
+            minuit_kwargs['fix_w'] = True
+        else: 
+            minuit_kwargs['fix_omgM'] = self.fix_omgM
+            minuit_kwargs['fix_omgK'] = self.fix_omgK
+            minuit_kwargs['fix_w'] = self.fix_w  
                 
         self.minuit = minuit.Minuit(self._minuit_chi2_,
                                     pedantic=False,
@@ -289,7 +290,7 @@ class Hubble_fit(object):
 
         pkl.dump(HD_results, open(outpath, 'w'))
 
-    def compute_contour(self,varx,vary,nsigma=1,nbinX=7,quick=True,results='Hubblefit/results/'):
+    def compute_contour(self, varx, vary, nsigma=1, nbinX=7, quick=True):
         '''
         Function which computes contours fromp a converged imnuit object
         inputs:
